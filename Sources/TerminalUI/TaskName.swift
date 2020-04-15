@@ -1,3 +1,4 @@
+// swiftlint:disable file_length
 private let _namesString = """
 com.ask.Alphazap
 uk.gov.Temp
