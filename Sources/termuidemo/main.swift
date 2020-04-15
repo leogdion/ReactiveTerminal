@@ -1,0 +1,3 @@
+import TerminalUI
+
+TerminalUI().execute()
