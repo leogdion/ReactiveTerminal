@@ -5,7 +5,9 @@ import PackageDescription
 
 let package = Package(
   name: "TerminalUI",
-  products: [
+  platforms: [
+    .macOS(.v10_12)
+  ], products: [
     // Products define the executables and libraries produced by a package, and make them visible to other packages.
     .library(
       name: "TerminalUI",
@@ -34,17 +36,17 @@ let package = Package(
 )
 
 #if canImport(PackageConfig)
-    import PackageConfig
+  import PackageConfig
 
-    let config = PackageConfig([
-        "komondor": [
-            "pre-push": "swift test",
-            "pre-commit": [
-                "swift test",
-                "swiftlint autocorrect && swiftformat .",
-                "swiftformat --lint . && swiftlint",
-                "git add .",
-            ],
-        ],
-    ]).write()
+  let config = PackageConfiguration([
+    "komondor": [
+      "pre-push": ["swift test"],
+      "pre-commit": [
+        "swift test",
+        "swiftlint autocorrect && swiftformat .",
+        "swiftformat --lint . && swiftlint",
+        "git add ."
+      ]
+    ]
+  ]).write()
 #endif
