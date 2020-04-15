@@ -80,7 +80,7 @@ Lorem Description
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  spec.source       = { :git => "https://github.com/brightdigit/TerminalUI.git", :commit => "9844ca874804386ade6e1d504cd2134504f8c102" }
+  spec.source       = { :git => "https://github.com/brightdigit/TerminalUI.git", :tag => "0.0.1" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -91,7 +91,7 @@ Lorem Description
   #  Not including the public_header_files will make all headers public.
   #
 
-  spec.source_files  = "Sources/**/*.swift"
+  spec.source_files  = "Sources/TerminalUI/**/*.swift"
   spec.swift_versions = "5"
 
   # spec.public_header_files = "Classes/**/*.h"
