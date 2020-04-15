@@ -9,10 +9,10 @@ public protocol TaskCollectionDelegate: AnyObject {
 }
 
 public class Task {
-  public init(id: UUID, name: String, speed: TimeInterval = 1.0) {
-    self.id = id
-    self.name = name
-    self.speed = speed
+  public init(id: UUID? = nil, name: String? = nil, speed: TimeInterval? = nil) {
+    self.id = id ?? UUID()
+    self.name = name ?? TaskName.shared.generate()
+    self.speed = speed ?? Double.random(in: 0.5...5.0)
   }
 
   public let id: UUID
@@ -29,7 +29,11 @@ public class Task {
 
   public func start() {
     let timer = Timer.scheduledTimer(withTimeInterval: speed, repeats: true) { _ in
-      self.progress += 1.0
+      self.progress = min(100.0, self.progress + 1.0)
+      if self.progress >= 100.0 {
+        self.timer?.invalidate()
+        self.timer = nil
+      }
     }
     self.timer = timer
   }
@@ -47,11 +51,39 @@ public class TaskCollection: TaskDelegate {
       task.delegate = self
     }
   }
+  
+  public convenience init(count: Int) {
+    let tasks = (0..<count).map { _ in
+      Task()
+    }
+    
+    self.init(tasks: tasks)
+  }
 
   public let tasks: [Task]
 }
 
-public struct TerminalUI {
+extension TaskCollection {
+  public func start () {
+    for task in tasks {
+      task.start()
+    }
+  }
+  
+  public var progress : Double {
+    return self.tasks.map{ $0.progress }.reduce(0, +) / Double(self.tasks.count)
+  }
+}
+
+public class TerminalUI : TaskCollectionDelegate {
+  public func tasks(_ collection: TaskCollection, updatedFromSource source: Any?) {
+    print(collection.progress, (source as? Task)?.name ?? "")
+    if collection.progress >= 100.0 {
+      RunLoop.current.cancelPerformSelectors(withTarget: self)
+    }
+  }
+  
+  var semaphore = DispatchSemaphore(value: 0)
   var text = "Hello, World!"
 
   public init() {}
@@ -61,13 +93,17 @@ public struct TerminalUI {
   }
 
   public func execute() {
-    var progress = 0.0
-    while progress <= 100 {
-      print("Progress: \(progress)")
-      escapeWith(code: "[1A")
-      escapeWith(code: "[2K")
-      sleep(1)
-      progress += 1
-    }
+    let collection = TaskCollection(count: 10)
+    collection.delegate = self
+    collection.start()
+    RunLoop.main.run()
+//    var progress = 0.0
+//    while progress <= 100 {
+//      print("Progress: \(progress)")
+//      escapeWith(code: "[1A")
+//      escapeWith(code: "[2K")
+//      sleep(1)
+//      progress += 1
+//    }
   }
 }
