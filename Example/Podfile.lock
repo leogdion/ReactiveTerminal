@@ -1,0 +1,16 @@
+PODS:
+  - TerminalUI (0.0.1)
+
+DEPENDENCIES:
+  - TerminalUI (from `../`)
+
+EXTERNAL SOURCES:
+  TerminalUI:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  TerminalUI: f1b187f89f746fdd48ab491954dba125756bfbd9
+
+PODFILE CHECKSUM: 0f292efe3c8c1c37b6981a114d3b0f854529ea50
+
+COCOAPODS: 1.8.4
