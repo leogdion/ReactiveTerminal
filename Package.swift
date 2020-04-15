@@ -43,6 +43,7 @@ let package = Package(
       "pre-push": ["swift test"],
       "pre-commit": [
         "swift test",
+        "pod spec lint",
         "swiftlint autocorrect && swiftformat .",
         "swiftformat --lint . && swiftlint",
         "git add ."
