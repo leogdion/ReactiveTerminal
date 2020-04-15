@@ -49,3 +49,6 @@ A description of this package.
 # DESCRIPTION HERE
 
 [Documentation Here](/docs/README.md)
+
+https://github.com/fdehau/tui-rs
+https://github.com/migueldeicaza/gui.cs
