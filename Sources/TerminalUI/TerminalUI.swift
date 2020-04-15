@@ -12,7 +12,7 @@ public class Task {
   public init(id: UUID? = nil, name: String? = nil, speed: TimeInterval? = nil) {
     self.id = id ?? UUID()
     self.name = name ?? TaskName.shared.generate()
-    self.speed = speed ?? Double.random(in: 0.5...5.0)
+    self.speed = speed ?? Double.random(in: 0.5 ... 5.0)
   }
 
   public let id: UUID
@@ -51,12 +51,12 @@ public class TaskCollection: TaskDelegate {
       task.delegate = self
     }
   }
-  
+
   public convenience init(count: Int) {
-    let tasks = (0..<count).map { _ in
+    let tasks = (0 ..< count).map { _ in
       Task()
     }
-    
+
     self.init(tasks: tasks)
   }
 
@@ -64,25 +64,25 @@ public class TaskCollection: TaskDelegate {
 }
 
 extension TaskCollection {
-  public func start () {
+  public func start() {
     for task in tasks {
       task.start()
     }
   }
-  
-  public var progress : Double {
-    return self.tasks.map{ $0.progress }.reduce(0, +) / Double(self.tasks.count)
+
+  public var progress: Double {
+    return tasks.map { $0.progress }.reduce(0, +) / Double(tasks.count)
   }
 }
 
-public class TerminalUI : TaskCollectionDelegate {
+public class TerminalUI: TaskCollectionDelegate {
   public func tasks(_ collection: TaskCollection, updatedFromSource source: Any?) {
     print(collection.progress, (source as? Task)?.name ?? "")
     if collection.progress >= 100.0 {
       RunLoop.current.cancelPerformSelectors(withTarget: self)
     }
   }
-  
+
   var semaphore = DispatchSemaphore(value: 0)
   var text = "Hello, World!"
 

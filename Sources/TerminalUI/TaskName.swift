@@ -1,4 +1,4 @@
-fileprivate let _namesString = """
+private let _namesString = """
 com.ask.Alphazap
 uk.gov.Temp
 com.netscape.Latlux
@@ -1002,15 +1002,15 @@ com.godaddy.Asoka
 """
 
 struct TaskName {
-  private init () {
-    self.names = _namesString.components(separatedBy: .whitespacesAndNewlines)
+  private init() {
+    names = _namesString.components(separatedBy: .whitespacesAndNewlines)
   }
-  
-  let names : [String]
-  
-  public func generate () -> String {
-    return names[Int.random(in: 0..<names.count)]
+
+  let names: [String]
+
+  public func generate() -> String {
+    return names[Int.random(in: 0 ..< names.count)]
   }
-  
+
   public static let shared = TaskName()
 }
