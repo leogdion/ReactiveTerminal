@@ -1,13 +1,25 @@
-struct TerminalUI {
+import Foundation
+
+public struct TerminalUI {
   var text = "Hello, World!"
 
-  func execute() {
-    func escapeWith(code: String) {
-      print("\u{1B}\(code)", terminator: "")
-    }
+  public init () {
+    
+  }
 
-    print("Hello World")
-    escapeWith(code: "[1A")
-    print("Bye", terminator: "")
+  func escapeWith(code: String) {
+    print("\u{1B}\(code)", terminator: "")
+  }
+  
+  public func execute() {
+
+    var progress = 0.0
+    while (progress <= 100) {
+      print("Progress: \(progress)")
+      escapeWith(code: "[1A")
+      escapeWith(code: "[2K")
+      sleep(1)
+      progress += 1
+    }
   }
 }

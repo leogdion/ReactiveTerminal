@@ -10,7 +10,8 @@ let package = Package(
     .library(
       name: "TerminalUI",
       targets: ["TerminalUI"]
-    )
+    ),
+    .executable(name: "termuidemo", targets: ["termuidemo"])
   ],
   dependencies: [
     // Dependencies declare other packages that this package depends on.
@@ -26,6 +27,7 @@ let package = Package(
     .testTarget(
       name: "TerminalUITests",
       dependencies: ["TerminalUI"]
-    )
+    ),
+    .target(name: "termuidemo", dependencies: ["TerminalUI"])
   ]
 )
