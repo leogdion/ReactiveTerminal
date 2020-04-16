@@ -1,18 +1,19 @@
 import Foundation
 
 public protocol TerminalContent {
-  func write<Stream: TextOutputStream>(to stream: inout Stream, within size: WindowSize)
+  func render<View: TerminalView>(to view: inout View)
 }
 
-public struct PaddedContent<Content: TerminalContent>: TerminalContent {
-  public func write<Stream>(to _: inout Stream, within _: WindowSize) where Stream: TextOutputStream {}
-
-  public let body: Content
-
-  public init(_ body: Content) {
-    self.body = body
-  }
-}
+//
+// public struct PaddedContent<Content: TerminalContent>: TerminalContent {
+//  public func write<Stream>(to _: inout Stream, within _: WindowSize) where Stream: TextOutputStream {}
+//
+//  public let body: Content
+//
+//  public init(_ body: Content) {
+//    self.body = body
+//  }
+// }
 
 public enum TerminalEdge: Int8 {
   case top = 1
@@ -46,9 +47,9 @@ public enum TerminalEdge: Int8 {
   }
 }
 
-@available(OSX 10.15.0, *)
-public extension TerminalContent {
-  func padding(_: TerminalEdge.Set = .all, _: Int? = nil) -> some TerminalContent {
-    PaddedContent(self)
-  }
-}
+// @available(OSX 10.15.0, *)
+// public extension TerminalContent {
+//  func padding(_: TerminalEdge.Set = .all, _: Int? = nil) -> some TerminalContent {
+//    PaddedContent(self)
+//  }
+// }

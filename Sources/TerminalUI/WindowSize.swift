@@ -10,7 +10,7 @@ public struct WindowSize {
   public let width: Int
   public let height: Int
 
-  public init(winsize: winsize) {
+  public init(winsize: winsize = winsize()) {
     columns = Int(winsize.ws_col)
     rows = Int(winsize.ws_row)
     width = Int(winsize.ws_xpixel)

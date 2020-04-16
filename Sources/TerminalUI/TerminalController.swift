@@ -6,54 +6,104 @@
 
 import Foundation
 
-public class TerminalController<Stream: TextOutputStream, Content: TerminalContent> {
-  public private(set) var windowSize = winsize()
-  private var shouldKeepRunning = true
-  private var stream: Stream
-  private let content: Content
-  private var timer: Timer!
-  private let runLoop = RunLoop.current
-  let sigwinchSrc = DispatchSource.makeSignalSource(signal: SIGWINCH, queue: .main)
+public protocol TerminalView {
+  func hideCursor()
+  func put(character: Character, at position: Position)
+  var windowSize: WindowSize { get }
+}
 
-  public init(stream: Stream, content: Content) {
+public protocol TerminalWindow: TerminalView {
+  func clear()
+  func flush()
+  func initialize()
+}
+
+public class TerminalController<Window: TerminalWindow, Content: TerminalContent> {
+  private var shouldKeepRunning = true
+  private var window: Window
+  private let content: Content
+  private let runLoop = RunLoop.current
+
+  private var timer: Timer!
+  public init(window: Window, content: Content) {
     // fdopen(FileHandle.standardInput.fileDescriptor, <#T##UnsafePointer<Int8>!#>)
-    _ = ioctl(STDOUT_FILENO, WindowSizeAttribute, &windowSize)
-    self.stream = stream
+
+    self.window = window
     self.content = content
     let timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { _ in
       self.draw()
 
     })
-    sigwinchSrc.setEventHandler {
-      if ioctl(STDOUT_FILENO, WindowSizeAttribute, &self.windowSize) == 0 {
-        self.draw()
-      }
-    }
+
     self.timer = timer
     runLoop.add(timer, forMode: .common)
   }
 
   public func run() {
-    sigwinchSrc.resume()
+    window.initialize()
     while shouldKeepRunning == true,
       runLoop.run(mode: .default, before: .distantFuture) {}
     timer.invalidate()
   }
 
   public func draw() {
-    stream.escapeWith(code: "[r")
-    stream.escapeWith(code: "[2J")
+    // stream.escapeWith(code: "[r")
+    window.clear()
+    // stream.escapeWith(code: "[2J")
 
-    content.write(to: &stream, within: WindowSize(winsize: windowSize))
-    stream.escapeWith(code: "[f")
-    stream.escapeWith(code: "[?25l")
+    content.render(to: &window)
+    // content.write(to: &stream, within: WindowSize(winsize: windowSize))
+    // stream.escapeWith(code: "[f")
+    window.hideCursor()
+    // stream.escapeWith(code: "[?25l")
 
-    fflush(stdout)
+    window.flush()
   }
 }
 
-extension TerminalController where Stream == StandardOutputStream {
+public class StandardOutputWindow: TerminalWindow {
+  var stream = StandardOutputStream()
+  let sigwinchSrc = DispatchSource.makeSignalSource(signal: SIGWINCH, queue: .main)
+
+  public init() {
+    var winsizeObj = winsize()
+    _ = ioctl(STDOUT_FILENO, WindowSizeAttribute, &winsizeObj)
+    windowSize = WindowSize(winsize: winsizeObj)
+
+    sigwinchSrc.setEventHandler {
+      var winsizeObj = winsize()
+      if ioctl(STDOUT_FILENO, WindowSizeAttribute, &winsizeObj) == 0 {
+        self.windowSize = WindowSize(winsize: winsizeObj)
+      }
+    }
+  }
+
+  public func clear() {
+    stream.escapeWith(code: "[2J")
+  }
+
+  public func flush() {
+    fflush(stdout)
+  }
+
+  public func hideCursor() {
+    stream.escapeWith(code: "[?25l")
+  }
+
+  public func put(character: Character, at position: Position) {
+    stream.escapeWith(code: "[\(position.y);\(position.x)H")
+    stream.write(String(character))
+  }
+
+  public var windowSize: WindowSize
+
+  public func initialize() {
+    sigwinchSrc.resume()
+  }
+}
+
+extension TerminalController where Window == StandardOutputWindow {
   public convenience init(content: Content) {
-    self.init(stream: StandardOutputStream(), content: content)
+    self.init(window: StandardOutputWindow(), content: content)
   }
 }
