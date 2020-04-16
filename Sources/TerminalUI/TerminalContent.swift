@@ -21,9 +21,10 @@ public enum TerminalEdge: Int8 {
   case trailing = 8
 
   public struct Set: OptionSet {
-    // swiftlint:disable
+    // swiftlint:disable nesting
     public typealias Element = TerminalEdge.Set
     public typealias ArrayLiteralElement = TerminalEdge.Set.Element
+    // swiftlint:enable nesting
 
     public init(rawValue: RawValue) {
       self.rawValue = rawValue
