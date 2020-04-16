@@ -1,91 +1,5 @@
 import Foundation
 
-#if os(Linux)
-  import Glibc
-  // swiftlint:disable:next identifier_name
-  let WindowSize = UInt(TIOCGWINSZ)
-#else
-  // swiftlint:disable:next identifier_name
-  let WindowSize = TIOCGWINSZ
-  import Darwin
-#endif
-
-public protocol TaskDelegate: AnyObject {
-  func taskUpdated(_ task: Task)
-}
-
-public protocol TaskCollectionDelegate: AnyObject {
-  func tasks(_ collection: TaskCollection, updatedFromSource source: Any?)
-}
-
-public class Task {
-  public init(id: UUID? = nil, name: String? = nil, speed: TimeInterval? = nil) {
-    self.id = id ?? UUID()
-    self.name = name ?? TaskName.shared.generate()
-    self.speed = speed ?? Double.random(in: 0.5 ... 5.0)
-  }
-
-  public let id: UUID
-  public let name: String
-  public let speed: TimeInterval
-  public var progress: Double = 0.0 {
-    didSet {
-      self.delegate?.taskUpdated(self)
-    }
-  }
-
-  public private(set) var timer: Timer?
-  public weak var delegate: TaskDelegate?
-
-  public func start() {
-    let timer = Timer.scheduledTimer(withTimeInterval: speed, repeats: true) { _ in
-      self.progress = min(100.0, self.progress + 0.1)
-      if self.progress >= 100.0 {
-        self.timer?.invalidate()
-        self.timer = nil
-      }
-    }
-    self.timer = timer
-  }
-}
-
-public class TaskCollection: TaskDelegate {
-  public weak var delegate: TaskCollectionDelegate?
-  public func taskUpdated(_ task: Task) {
-    delegate?.tasks(self, updatedFromSource: task)
-  }
-
-  public init(tasks: [Task]) {
-    self.tasks = tasks
-    for task in tasks {
-      task.delegate = self
-    }
-  }
-
-  public convenience init(count: Int) {
-    let tasks = (0 ..< count).map { _ in
-      Task()
-    }
-
-    self.init(tasks: tasks)
-  }
-
-  public let tasks: [Task]
-}
-
-extension TaskCollection {
-  public func start() {
-    delegate?.tasks(self, updatedFromSource: nil)
-    for task in tasks {
-      task.start()
-    }
-  }
-
-  public var progress: Double {
-    return tasks.map { $0.progress }.reduce(0, +) / Double(tasks.count)
-  }
-}
-
 public class TerminalUI: TaskCollectionDelegate {
   var windowSize = winsize()
   fileprivate func printData(_ collection: TaskCollection) {
@@ -152,13 +66,5 @@ public class TerminalUI: TaskCollectionDelegate {
     collection.start()
     while shouldKeepRunning == true,
       runLoop.run(mode: .default, before: .distantFuture) {}
-//    var progress = 0.0
-//    while progress <= 100 {
-//      print("Progress: \(progress)")
-//      escapeWith(code: "[1A")
-//      escapeWith(code: "[2K")
-//      sleep(1)
-//      progress += 1
-//    }
   }
 }

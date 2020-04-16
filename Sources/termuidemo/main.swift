@@ -1,3 +1,5 @@
+import Foundation
 import TerminalUI
 
-TerminalUI().execute()
+let controller = TerminalController()
+controller.run()
