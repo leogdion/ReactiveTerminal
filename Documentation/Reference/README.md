@@ -6,6 +6,8 @@
 
 ## Structs
 
+-   [PaddedContent](structs/PaddedContent.md)
+-   [Set](structs/Set.md)
 -   [StandardOutputStream](structs/StandardOutputStream.md)
 -   [TextBox](structs/TextBox.md)
 -   [WindowSize](structs/WindowSize.md)
@@ -17,9 +19,14 @@
 -   [TerminalController](classes/TerminalController.md)
 -   [TerminalUI](classes/TerminalUI.md)
 
+## Enums
+
+-   [TerminalEdge](enums/TerminalEdge.md)
+
 ## Extensions
 
 -   [TaskCollection](extensions/TaskCollection.md)
+-   [TerminalContent](extensions/TerminalContent.md)
 -   [TerminalController](extensions/TerminalController.md)
 -   [TextOutputStream](extensions/TextOutputStream.md)
 
