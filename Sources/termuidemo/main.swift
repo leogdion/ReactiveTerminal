@@ -1,5 +1,5 @@
 import Foundation
 import TerminalUI
 
-let controller = TerminalController()
+let controller = TerminalController(content: TextBox())
 controller.run()

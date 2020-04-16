@@ -38,7 +38,7 @@ public class TerminalUI: TaskCollectionDelegate {
   }
 
   func refresh() {
-    if ioctl(STDOUT_FILENO, WindowSize, &windowSize) == 0 {
+    if ioctl(STDOUT_FILENO, WindowSizeAttribute, &windowSize) == 0 {
       printData(collection)
     }
   }
@@ -49,7 +49,7 @@ public class TerminalUI: TaskCollectionDelegate {
   let runLoop = RunLoop.current
   let collection = TaskCollection(count: 10)
   public init() {
-    _ = ioctl(STDOUT_FILENO, WindowSize, &windowSize)
+    _ = ioctl(STDOUT_FILENO, WindowSizeAttribute, &windowSize)
     let sigwinchSrc = DispatchSource.makeSignalSource(signal: SIGWINCH, queue: .main)
     sigwinchSrc.setEventHandler {
       self.refresh()

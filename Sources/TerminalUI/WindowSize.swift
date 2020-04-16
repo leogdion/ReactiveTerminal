@@ -1,9 +1,19 @@
 #if os(Linux)
   import Glibc
-  // swiftlint:disable:next identifier_name
-  public let WindowSize = UInt(TIOCGWINSZ)
 #else
-  // swiftlint:disable:next identifier_name
-  public let WindowSize = TIOCGWINSZ
   import Darwin
 #endif
+
+public struct WindowSize {
+  public let columns: Int
+  public let rows: Int
+  public let width: Int
+  public let height: Int
+
+  public init(winsize: winsize) {
+    columns = Int(winsize.ws_col)
+    rows = Int(winsize.ws_row)
+    width = Int(winsize.ws_xpixel)
+    height = Int(winsize.ws_ypixel)
+  }
+}
