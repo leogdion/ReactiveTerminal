@@ -3,7 +3,7 @@
 # `TerminalController`
 
 ```swift
-public class TerminalController<Stream: TextOutputStream>
+public class TerminalController<Stream: TextOutputStream, Content: TerminalContent>
 ```
 
 ## Properties
@@ -14,10 +14,10 @@ public private(set) var windowSize = winsize()
 ```
 
 ## Methods
-### `init(stream:)`
+### `init(stream:content:)`
 
 ```swift
-public init(stream: Stream)
+public init(stream: Stream, content: Content)
 ```
 
 ### `run()`

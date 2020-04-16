@@ -2,10 +2,13 @@
 
 -   [TaskCollectionDelegate](protocols/TaskCollectionDelegate.md)
 -   [TaskDelegate](protocols/TaskDelegate.md)
+-   [TerminalContent](protocols/TerminalContent.md)
 
 ## Structs
 
 -   [StandardOutputStream](structs/StandardOutputStream.md)
+-   [TextBox](structs/TextBox.md)
+-   [WindowSize](structs/WindowSize.md)
 
 ## Classes
 

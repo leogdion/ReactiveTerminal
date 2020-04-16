@@ -3,8 +3,8 @@
 # `TerminalController`
 
 ## Methods
-### `init()`
+### `init(content:)`
 
 ```swift
-public convenience init()
+public convenience init(content: Content)
 ```
