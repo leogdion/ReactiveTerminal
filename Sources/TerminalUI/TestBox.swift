@@ -1,15 +1,15 @@
-public struct Position {
-  public let x: Int
-  public let y: Int
-}
-
 public struct TextBox: TerminalContent {
   public func render<View>(to view: inout View) where View: TerminalView {
-    let windowSize: WindowSize = view.windowSize
+    guard let windowSize: WindowSize = view.windowSize else {
+      return
+    }
+    guard windowSize.columns > 0, windowSize.rows > 0 else {
+      return
+    }
     for x in 1 ... windowSize.columns {
       for y in 1 ... windowSize.rows {
         let character: Character
-        if x == 1 || y == 1 || x == windowSize.columns || y == windowSize.rows {
+        if x == 1 || y == 1 || x == windowSize.columns - 1 || y == windowSize.rows - 1 {
           character = "="
         } else {
           character = "0"
