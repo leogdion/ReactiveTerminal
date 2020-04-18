@@ -1,4 +1,8 @@
 public struct TextBox: TerminalContent {
+  public var desiredSize: WindowSize? {
+    return WindowSize(columns: 3, rows: 3, width: 0, height: 0)
+  }
+  
   public func render<View>(to view: inout View) where View: TerminalView {
     guard let windowSize: WindowSize = view.windowSize else {
       return
