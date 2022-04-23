@@ -10,14 +10,16 @@ struct Text : View {
   
   let modifiers : [AnyCodedModifier]
   let content : String
-  func doPrint() {
+  
+  func doPrint<View>(to view: inout View) where View : TerminalView {
     
     for modifier in modifiers {
       for code in modifier.modifier.prefixCode {
-        Helpers.escapeWith(code: code)
+        view.escapeWith(code: code)
+        
       }
     }
-    Swift.print(self.content, terminator: "")
+    view.write(self.content)
     
       for modifier in modifiers {
         if modifier.modifier.prefixCode.isEmpty {
@@ -25,9 +27,12 @@ struct Text : View {
         }
         
           for code in modifier.modifier.suffixCode {
-            Helpers.escapeWith(code: code)
+            view.escapeWith(code: code)
           }
       }
+  }
+  func doPrint() {
+    
   }
   
   func foregroundColor(_ color: Color) -> Self {

@@ -2,7 +2,7 @@
 
 @available(macOS 10.15, *)
 @main
-public struct OurRT : ReactiveTerminal {
+public struct OurRT : App {
   public init () {}
   
 

@@ -29,7 +29,18 @@ public class StandardOutputWindow: TerminalWindow {
   public func hideCursor() {
     stream.escapeWith(code: "[?25l")
   }
+  
+  public func escapeWith(code: String) {
+    stream.escapeWith(code: code)
+  }
 
+  public func write(_ string: String) {
+    stream.write(string)
+  }
+  public func move(to position: Position) {
+    stream.escapeWith(code: "[\(position.y);\(position.x)H")
+  }
+  
   public func put(character: Character, at position: Position) {
     stream.escapeWith(code: "[\(position.y);\(position.x)H")
     stream.write(String(character))

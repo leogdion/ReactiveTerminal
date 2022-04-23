@@ -13,30 +13,27 @@ struct Text2 : View {
   }
   
   let text : String
-  func doPrint() {
-    Swift.print(text)
+  
+  func doPrint<View>(to view: inout View) where View : TerminalView {
+    view.write(text)
   }
-  
-  
 }
 
 @available(macOS 10.15, *)
-public protocol ReactiveTerminal {
+public protocol App {
   associatedtype Body : View
   init ()
   @ViewBuilder var body: Self.Body { get }
 }
  
-enum Helpers {
-  static func escapeWith(code: String) {
-    print("\u{1B}\(code)", terminator: "")
-  }
-}
+
 @available(macOS 10.15, *)
-public extension ReactiveTerminal {
+public extension App {
   
   static func main () {
-    
+    let app = Self.init()
+//    let controller = TerminalController(content: app.body)
+//    controller.run()
 //    for i in 0..<16 {
 //      for j in 0..<16 {
 //
@@ -52,13 +49,14 @@ public extension ReactiveTerminal {
 //            code = str(i * 16 + j)
 //            sys.stdout.write(u"\u001b[38;5;" + code + "m " + code.ljust(4))
 //        print u"\u001b[0m"
-    let app = Self.init()
+//    let app = Self.init()
     let subscription = Timer.publish(every: 1.0, on: .main, in: .default)
       .autoconnect()
       .sink { _ in
-        Helpers.escapeWith(code: "[2J")
-        Helpers.escapeWith(code: "[0;0H")
-        app.body.doPrint()
+        var window = StandardOutputWindow()
+        window.escapeWith(code: "[2J")
+        window.escapeWith(code: "[0;0H")
+        app.body.doPrint(to: &window)
       }
 
     withExtendedLifetime(subscription) {
@@ -70,10 +68,10 @@ public extension ReactiveTerminal {
 
 
 @available(macOS 10.12, *)
-public class TerminalController<Window: TerminalWindow, Content: TerminalContent> {
+public class TerminalController<Window: TerminalWindow, Content: View> {
   private var shouldKeepRunning = true
   private var window: Window
-  private let content: Content
+  private let content: View
   private let runLoop = RunLoop.current
 
   private var timer: Timer!
@@ -103,10 +101,11 @@ public class TerminalController<Window: TerminalWindow, Content: TerminalContent
     // stream.escapeWith(code: "[r")
     window.clear()
     // stream.escapeWith(code: "[2J")
-
-    content.render(to: &window)
+    window.move(to: .init(x: 0, y: 0))
+    content.doPrint(to: &window)
     // content.write(to: &stream, within: WindowSize(winsize: windowSize))
     // stream.escapeWith(code: "[f")
+    
     window.hideCursor()
     // stream.escapeWith(code: "[?25l")
 

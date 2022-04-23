@@ -2,11 +2,13 @@
 
 
 public protocol View {
-  func doPrint ()
+  
+  func doPrint<TerminalViewType: TerminalView>(to view: inout TerminalViewType)
 }
 
+
 struct List<Content : View> : View {
-  func doPrint() {
+  func doPrint<View>(to view: inout View) where View : TerminalView {
     
   }
   

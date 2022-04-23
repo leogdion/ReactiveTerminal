@@ -2,7 +2,7 @@
 
 
 struct EmptyView : View {
-  func doPrint() {
+  func doPrint<View>(to view: inout View) where View : TerminalView {
     
   }
 }
