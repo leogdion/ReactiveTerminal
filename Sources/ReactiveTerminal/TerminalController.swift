@@ -55,8 +55,11 @@ public extension App {
       .sink { _ in
         var window = StandardOutputWindow()
         window.escapeWith(code: "[2J")
-        window.escapeWith(code: "[0;0H")
+        //window.escapeWith(code: "[0;0H")
+        window.move(to: .init(x: 0, y: 0))
         app.body.doPrint(to: &window)
+        window.hideCursor()
+        window.flush()
       }
 
     withExtendedLifetime(subscription) {

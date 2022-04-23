@@ -9,6 +9,10 @@ struct TupleView<Content> : View, ViewCollectionable {
              content.C1.doPrint(to: &view)
               closure(&view)
               content.C2.doPrint(to: &view)
+            } else if let content = self.content as? (C0 : View, C1 : View) {
+              content.C0.doPrint(to: &view)
+              closure(&view)
+             content.C1.doPrint(to: &view)
             } else {
               print("Eeek")
             }
