@@ -161,7 +161,3 @@ xcuserdata
 **/xcshareddata/WorkspaceSettings.xcsettings
 
 # End of https://www.gitignore.io/api/swiftpm,swiftpackagemanager,xcode,swift,macos
-*.xcworkspace
-Pods
-*.lcov
-Brewfile.lock.json
