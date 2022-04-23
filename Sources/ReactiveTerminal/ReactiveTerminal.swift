@@ -1,5 +1,4 @@
 import Foundation
-import OrderedCollections
 
 enum Color : UInt8 {
   struct ComponentValue : ExpressibleByIntegerLiteral, RawRepresentable {
@@ -646,10 +645,11 @@ public struct OurRT : ReactiveTerminal {
   
 
   public var body: some View {
-    
+    StackView{
       Text("Hello World A").foregroundColor(.chartreuse1)
-    Text(Int.random(in: 0...1).isMultiple(of: 2) ? "YeS" : "No").color(background: Bool.random() ? Color.chartreuse3A : Color.gold1, foreground: Bool.random() ? Color.darkBlue : Color.sandyBrown)
+      Text(Int.random(in: 0...1).isMultiple(of: 2) ? "YeS" : "No").color(background: Bool.random() ? Color.chartreuse3A : Color.gold1, foreground: Bool.random() ? Color.darkBlue : Color.sandyBrown)
       Text2("Hello World C")
+    }
 
   }
 }
@@ -783,26 +783,46 @@ struct Text : View {
 }
 
 struct StackView<Content : View> : View {
+  internal init(@ViewBuilder content: @escaping () -> Content) {
+    self.content = content()
+  }
+  
   let content : Content
   
   func doPrint() {
-    
-  }
-  func doPrint<V0, V1>() where Content == TupleView<(V0, V1)> {
-
+    if let content = self.content as? ViewCollectionable{
+      content.doPrintEach{
+        print()
+      }
+    } else {
+      print("Eeek")
+    }
   }
 }
 
+protocol ViewCollectionable {
+  func doPrintEach (_ closure : @escaping () -> Void)
+}
 
-
-struct TupleView<Content> : View {
+struct TupleView<Content> : View, ViewCollectionable {
   internal init(_ content: Content) {
     self.content = content
   }
   
   let content : Content
   
-  
+  func doPrintEach (_ closure: @escaping () -> Void) {
+    if let content = self.content as? (C0 : View, C1 : View, C2 : View) {
+     content.C0.doPrint()
+      closure()
+     content.C1.doPrint()
+      closure()
+      content.C2.doPrint()
+    } else {
+      print("Eeek")
+    }
+    
+  }
   
   func doPrint() {
     if let content = self.content as? (C0 : View, C1 : View, C2 : View) {
