@@ -1,4 +1,5 @@
 import Foundation
+import OrderedCollections
 
 enum Color : UInt8 {
   struct ComponentValue : ExpressibleByIntegerLiteral, RawRepresentable {
@@ -645,9 +646,9 @@ public struct OurRT : ReactiveTerminal {
   
 
   public var body: some View {
-
-      Text("Hello World A")
-      Text(Int.random(in: 0...1).isMultiple(of: 2) ? "YeS" : "No")
+    
+      Text("Hello World A").foregroundColor(.chartreuse1)
+    Text(Int.random(in: 0...1).isMultiple(of: 2) ? "YeS" : "No").color(background: Bool.random() ? Color.chartreuse3A : Color.gold1, foreground: Bool.random() ? Color.darkBlue : Color.sandyBrown)
       Text2("Hello World C")
 
   }
@@ -681,20 +682,104 @@ struct Text2 : View {
   
 }
 
+struct SGRModifier : CodedModifier {
+  var prefixCode: [String] {
+    var codes = [String]()
+    if let foregroundColor = self.foregroundColor {
+      codes.append("[38;5;\(foregroundColor.rawValue)m")
+      
+    }
+    if let backgroundColor = self.backgroundColor {
+      codes.append("[48;5;\(backgroundColor.rawValue)m")
+    }
+    return codes
+  }
+  
+  var suffixCode: [String] {
+    return ["[0m"]
+  }
+  
+  static let id: Key = "sgrModifier"
+  
+  let backgroundColor: Color?
+  let foregroundColor: Color?
+  
+}
+
+struct AnyCodedModifier : Hashable {
+  static func == (lhs: AnyCodedModifier, rhs: AnyCodedModifier) -> Bool {
+    type(of: lhs.modifier).id.hashValue == type(of: rhs.modifier).id.hashValue
+  }
+  
+  let modifier : CodedModifier
+  
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(self.key)
+  }
+  
+  var key : String {
+    type(of: modifier).id
+  }
+  
+}
+protocol CodedModifier {
+  typealias Key = String
+  static var id : Key { get }
+  var prefixCode : [String] { get }
+  var suffixCode : [String] { get }
+}
+
 protocol Modifiable {
   func foregroundColor(_ color: Color?) -> Self
 }
+
 struct Text : View {
-  internal init(_ text: String) {
+  internal init(_ text: String, modifiers: [AnyCodedModifier] = .init()) {
     self.content = text
+    self.modifiers = modifiers
   }
   
+  let modifiers : [AnyCodedModifier]
   let content : String
   func doPrint() {
-    Swift.print(content)
+    
+    for modifier in modifiers {
+      for code in modifier.modifier.prefixCode {
+        Helpers.escapeWith(code: code)
+      }
+    }
+    Swift.print(self.content, terminator: "")
+    
+      for modifier in modifiers {
+        if modifier.modifier.prefixCode.isEmpty {
+          continue
+        }
+        
+          for code in modifier.modifier.suffixCode {
+            Helpers.escapeWith(code: code)
+          }
+      }
+  }
+  
+  func foregroundColor(_ color: Color) -> Self {
+    var modifiers = self.modifiers
+    modifiers.append(.init(modifier: SGRModifier(backgroundColor: nil, foregroundColor: color)))
+    return .init(self.content, modifiers: modifiers)
   }
   
   
+  func backgroundColor(_ color: Color) -> Self {
+    var modifiers = self.modifiers
+    modifiers.append(.init(modifier: SGRModifier(backgroundColor: color, foregroundColor: nil)))
+    return .init(self.content, modifiers: modifiers)
+  }
+  
+  func color(background: Color?, foreground: Color?) -> Self {
+    var modifiers = self.modifiers
+    modifiers.append(.init(modifier: SGRModifier(backgroundColor: background, foregroundColor: foreground)))
+    return .init(self.content, modifiers: modifiers)
+    
+  }
 }
 
 struct StackView<Content : View> : View {
@@ -773,11 +858,14 @@ public protocol ReactiveTerminal {
   @ViewBuilder var body: Self.Body { get }
 }
  
-@available(macOS 10.15, *)
-public extension ReactiveTerminal {
+enum Helpers {
   static func escapeWith(code: String) {
     print("\u{1B}\(code)", terminator: "")
   }
+}
+@available(macOS 10.15, *)
+public extension ReactiveTerminal {
+  
   static func main () {
     
 //    for i in 0..<16 {
@@ -799,8 +887,8 @@ public extension ReactiveTerminal {
     let subscription = Timer.publish(every: 1.0, on: .main, in: .default)
       .autoconnect()
       .sink { _ in
-        escapeWith(code: "[2J")
-        escapeWith(code: "[0;0H")
+        Helpers.escapeWith(code: "[2J")
+        Helpers.escapeWith(code: "[0;0H")
         app.body.doPrint()
       }
 
