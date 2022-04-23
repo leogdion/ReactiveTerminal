@@ -6,6 +6,7 @@
 
 import Foundation
 
+@available(macOS 10.12, *)
 public class TerminalController<Window: TerminalWindow, Content: TerminalContent> {
   private var shouldKeepRunning = true
   private var window: Window
@@ -50,6 +51,7 @@ public class TerminalController<Window: TerminalWindow, Content: TerminalContent
   }
 }
 
+@available(macOS 10.12, *)
 extension TerminalController where Window == StandardOutputWindow {
   public convenience init(content: Content) {
     self.init(window: StandardOutputWindow(), content: content)

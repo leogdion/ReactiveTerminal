@@ -1,5 +1,6 @@
 import Foundation
 
+@available(macOS 10.12, *)
 public class TerminalUI: TaskCollectionDelegate {
   var windowSize = winsize()
   fileprivate func printData(_ collection: TaskCollection) {

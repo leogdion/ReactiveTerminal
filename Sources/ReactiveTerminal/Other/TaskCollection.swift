@@ -1,3 +1,4 @@
+@available(macOS 10.12, *)
 public class TaskCollection: TaskDelegate {
   public weak var delegate: TaskCollectionDelegate?
   public func taskUpdated(_ task: Task) {
@@ -22,6 +23,7 @@ public class TaskCollection: TaskDelegate {
   public let tasks: [Task]
 }
 
+@available(macOS 10.12, *)
 extension TaskCollection {
   public func start() {
     delegate?.tasks(self, updatedFromSource: nil)

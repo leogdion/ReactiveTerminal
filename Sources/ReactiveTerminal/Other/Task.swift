@@ -1,5 +1,6 @@
 import Foundation
 
+@available(macOS 10.12, *)
 public class Task {
   public let id: UUID
   public let name: String
