@@ -27,7 +27,7 @@ struct HStack : View {
   
   func drawIn(stream: inout StandardOutputStream, size: WindowSize) {
     for view in content.children {
-      view.drawIn(stream: &<#T##StandardOutputStream#>, size: <#T##WindowSize#>)
+      //view.drawIn(stream: &<#T##StandardOutputStream#>, size: <#T##WindowSize#>)
     }
   }
 }

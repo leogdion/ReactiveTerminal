@@ -18,12 +18,13 @@ public class TerminalController<Window: TerminalWindow, Content: TerminalContent
 
     self.window = window
     self.content = content
-//    let timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { _ in
-//      self.draw()
-//
-//    })
-//
-//    self.timer = timer
+
+    let timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { _ in
+      self.draw()
+
+    })
+
+    self.timer = timer
     runLoop.add(timer, forMode: .common)
   }
 

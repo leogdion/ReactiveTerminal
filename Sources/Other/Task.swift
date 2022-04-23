@@ -20,13 +20,14 @@ public class Task {
   }
 
   public func start() {
-//    let timer = Timer.scheduledTimer(withTimeInterval: speed, repeats: true) { _ in
-//      self.progress = min(100.0, self.progress + 0.1)
-//      if self.progress >= 100.0 {
-//        self.timer?.invalidate()
-//        self.timer = nil
-//      }
-//    }
-    //self.timer = timer
+
+    let timer = Timer.scheduledTimer(withTimeInterval: speed, repeats: true) { _ in
+      self.progress = min(100.0, self.progress + 0.1)
+      if self.progress >= 100.0 {
+        self.timer?.invalidate()
+        self.timer = nil
+      }
+    }
+    self.timer = timer
   }
 }
