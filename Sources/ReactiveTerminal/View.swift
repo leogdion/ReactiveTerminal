@@ -2,13 +2,13 @@
 
 
 public protocol View {
-  
-  func doPrint<TerminalViewType: TerminalView>(to view: inout TerminalViewType)
+  var idealSize : Size? { get }
+  func render<TerminalViewType: TerminalView>(to view: inout TerminalViewType)
 }
 
 
 struct List<Content : View> : View {
-  func doPrint<View>(to view: inout View) where View : TerminalView {
+  func render<View>(to view: inout View) where View : TerminalView {
     
   }
   
@@ -16,4 +16,7 @@ struct List<Content : View> : View {
     
   }
   
+  var idealSize: Size? {
+    return nil
+  }
 }

@@ -3,6 +3,17 @@
 
 
 struct Text : View {
+  var idealSize: Size? {
+    let lines = content.components(separatedBy: .newlines)
+    
+    let rows = lines.count
+    if let cols = lines.map({$0.count}).max() {
+      return Size(cols: cols, rows: rows)
+    } else {
+      return nil
+    }
+  }
+  
   internal init(_ text: String, modifiers: [AnyCodedModifier] = .init()) {
     self.content = text
     self.modifiers = modifiers
@@ -11,7 +22,7 @@ struct Text : View {
   let modifiers : [AnyCodedModifier]
   let content : String
   
-  func doPrint<View>(to view: inout View) where View : TerminalView {
+  func render<View>(to view: inout View) where View : TerminalView {
     
     for modifier in modifiers {
       for code in modifier.modifier.prefixCode {

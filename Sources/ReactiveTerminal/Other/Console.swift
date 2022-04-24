@@ -7,10 +7,10 @@
 //
 //import Foundation
 //
-//struct Size {
-//  let cols : Int
-//  let rows : Int
-//}
+public struct Size {
+  let cols : Int
+  let rows : Int
+}
 //
 //protocol View {
 //  func drawIn(stream: inout StandardOutputStream, size: WindowSize)

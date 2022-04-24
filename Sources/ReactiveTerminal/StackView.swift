@@ -1,7 +1,7 @@
 
 
 struct StackView<Content : View> : View {
-  func doPrint<TerminalViewType>(to view: inout TerminalViewType) where TerminalViewType : TerminalView {
+  func render<TerminalViewType>(to view: inout TerminalViewType) where TerminalViewType : TerminalView {
     
       if let content = self.content as? ViewCollectionable{
         content.doPrintEach(to: &view){view in
@@ -16,6 +16,10 @@ struct StackView<Content : View> : View {
     self.content = content()
   }
   
-  let content : Content
+  var idealSize: Size? {
+    return self.content.idealSize
+  }
   
+  let content : Content
+  //let spacing : Int
 }
