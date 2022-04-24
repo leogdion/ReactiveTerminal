@@ -5,6 +5,7 @@
 public struct OurRT : App {
   public init () {}
   
+  @Environment(\.refreshRateSeconds) var refreshRate
 
   public var body: some View {
     StackView{
