@@ -14,6 +14,22 @@
   }
 }
 
+struct CollectionView : View {
+  var idealSize: Size? {
+    return nil
+  }
+  
+  func render<TerminalViewType>(to view: inout TerminalViewType) where TerminalViewType : TerminalView {
+    if views.count == 1 {
+      views.first?.render(to: &view)
+    }
+  }
+  
+  let views : [View]
+  
+  
+}
+
 struct TupleView<Content> : View, ViewCollectionable {
   var idealSize: Size? {
     if let content = self.content as? (C0 : View, C1 : View, C2 : View) {

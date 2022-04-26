@@ -2,6 +2,7 @@ import Foundation
 
 public class StandardOutputWindow: TerminalWindow {
   var stream = StandardOutputStream()
+  
   let sigwinchSrc = DispatchSource.makeSignalSource(signal: SIGWINCH, queue: .main)
 
   public init() {
