@@ -27,13 +27,24 @@ struct StackView<Content : View> : View,Modifiable {
           $0.rows
         }.reduce(0, +) + (content.views.count - 1)*self.spacing
         
+        let topOffset : Int?
         if let totalHeight = view.windowSize?.rows {
-          let topOffset = (totalHeight - fullHeight)/2
-          view.escapeWith(code: "[\(topOffset)B")
+          topOffset = (totalHeight - fullHeight)/2
+//          view.escapeWith(code: "[\(topOffset)B")
           
+        } else {
+          topOffset = nil
         }
         
+        if let topOffset = topOffset {
+          for _ in (0..<topOffset) {
+            view.escapeWith(code: "[2K")
+            view.escapeWith(code: "[B")
+          }
+        }
+        //view.escapeWith(code: "[1J")
         for child in content.views {
+          
           let leftMargin : Int
           let endMargin : Int
           if let contentWidth = child.idealSize?.cols, let maxWidth = maxWidth {
@@ -44,14 +55,23 @@ struct StackView<Content : View> : View,Modifiable {
             endMargin = 0
           }
           view.escapeWith(code: "[2K")
-          view.escapeWith(code: "[\(leftMargin)C")
+          view.escapeWith(code: String(repeating: " ", count: leftMargin))
           child.render(to: &view)
           for _ in 0..<(self.spacing + 1) {
             view.escapeWith(code: "[B")
+            self.applyModifiersTo(view)
             view.escapeWith(code: "[K")
             
           }
           view.escapeWith(code: "[\(endMargin)D")
+          
+        }
+        
+        if let topOffset = topOffset {
+          for _ in (0..<topOffset) {
+            view.escapeWith(code: "[2K")
+            view.escapeWith(code: "[B")
+          }
         }
       } else {
         print("Eeek")

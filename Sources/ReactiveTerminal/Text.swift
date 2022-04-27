@@ -32,25 +32,33 @@ extension Modifiable {
 }
 
 extension Modifiable where Self : View {
-  func render<View>(to view: inout View) where View : TerminalView {
-    
+   func applyModifiersTo(_ view: TerminalView) {
     for modifier in modifiers {
       for code in modifier.modifier.prefixCode {
         view.escapeWith(code: code)
         
       }
     }
+  }
+  
+   func popModifiersTo(_ view: TerminalView) {
+    for modifier in modifiers {
+      if modifier.modifier.prefixCode.isEmpty {
+        continue
+      }
+      
+      for code in modifier.modifier.suffixCode {
+        view.escapeWith(code: code)
+      }
+    }
+  }
+  
+  func render<View>(to view: inout View) where View : TerminalView {
+    
+    applyModifiersTo(view)
     self.renderUnmodified(to: &view)
     
-      for modifier in modifiers {
-        if modifier.modifier.prefixCode.isEmpty {
-          continue
-        }
-        
-          for code in modifier.modifier.suffixCode {
-            view.escapeWith(code: code)
-          }
-      }
+    popModifiersTo(view)
   }
 }
 
