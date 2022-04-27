@@ -213,38 +213,32 @@ public extension App {
     var shouldKeepRunning = true
     let app = Self.init()
     var window = StandardOutputWindow()
+    
+    
     let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { _ in
-      
+      //window.hideCursor()
               window.escapeWith(code: "[2J")
-              //window.escapeWith(code: "[0;0H")
               window.move(to: .init(x: 0, y: 0))
               app.body.render(to: &window)
               window.hideCursor()
               window.flush()
-
     })
-    
     let runLoop = RunLoop.current
     runLoop.add(timer, forMode: .common)
+    let input = Timer(timeInterval: 0.1, repeats: true) { _ in
+      window.read()
+    }
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+      runLoop.add(input, forMode: .default)
+      input.fire()
+    }
+    
     window.initialize()
     while shouldKeepRunning == true,
       runLoop.run(mode: .default, before: .distantFuture) {}
     timer.invalidate()
-//    let subscription = Timer.publish(every: 1.0, on: .main, in: .default)
-//      .autoconnect()
-//      .sink { _ in
-//        var window = StandardOutputWindow()
-//        window.escapeWith(code: "[2J")
-//        //window.escapeWith(code: "[0;0H")
-//        window.move(to: .init(x: 0, y: 0))
-//        app.body.doPrint(to: &window)
-//        window.hideCursor()
-//        window.flush()
-//      }
-//
-//    withExtendedLifetime(subscription) {
-//      RunLoop.current.run()
-//    }
+    input.invalidate()
   }
 }
 

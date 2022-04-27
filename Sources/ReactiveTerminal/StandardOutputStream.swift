@@ -5,9 +5,10 @@
 #endif
 
 public struct StandardOutputStream: TextOutputStream {
-  public mutating func write(_ string: String) { fputs(string, stdout) }
+  let fileHandle = stdout
+  public mutating func write(_ string: String) { fputs(string, fileHandle) }
 
   public func flush () {
-    fflush(stdout)
+    fflush(fileHandle)
   }
 }
