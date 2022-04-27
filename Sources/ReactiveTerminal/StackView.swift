@@ -38,41 +38,66 @@ struct StackView<Content : View> : View,Modifiable {
         
         if let topOffset = topOffset {
           for _ in (0..<topOffset) {
-            view.escapeWith(code: "[2K")
+            if let maxWidth = maxWidth {
+            for _ in (0..<maxWidth) {
+              view.write(" ")
+            }
+              view.escapeWith(code: "[\(maxWidth)D")
+            }
             view.escapeWith(code: "[B")
           }
         }
         //view.escapeWith(code: "[1J")
-        for child in content.views {
+        for (index, child) in content.views.enumerated() {
           
           let leftMargin : Int
           let endMargin : Int
           if let contentWidth = child.idealSize?.cols, let maxWidth = maxWidth {
-            leftMargin = (maxWidth - contentWidth - 1) / 2
-            endMargin = maxWidth - leftMargin
+            leftMargin = (maxWidth - contentWidth) / 2
+            endMargin = maxWidth - leftMargin - contentWidth
           } else {
             leftMargin = 0
             endMargin = 0
           }
-          view.escapeWith(code: "[2K")
-          view.escapeWith(code: String(repeating: " ", count: leftMargin))
+          //view.escapeWith(code: "[2K")
+          view.write(String(repeating: " ", count: leftMargin))
           child.render(to: &view)
-          for _ in 0..<(self.spacing + 1) {
-            view.escapeWith(code: "[B")
-            self.applyModifiersTo(view)
-            view.escapeWith(code: "[K")
-            
+          self.applyModifiersTo(view)
+          view.write(String(repeating: " ", count: endMargin))
+          //print("1", terminator: "")
+          if let maxWidth = maxWidth {
+            view.escapeWith(code: "[\(maxWidth)D")
           }
-          view.escapeWith(code: "[\(endMargin)D")
+          //print("2", terminator: "")
+          
+          if index < content.views.endIndex - 1 {
+            for _ in 0..<(self.spacing + 1) {
+              view.escapeWith(code: "[B")
+              if let maxWidth = maxWidth {
+                view.write(String(repeating: " ", count: maxWidth))
+                view.escapeWith(code: "[\(maxWidth)D")
+              }
+            }
+          }
           
         }
-        
         if let topOffset = topOffset {
           for _ in (0..<topOffset) {
-            view.escapeWith(code: "[2K")
             view.escapeWith(code: "[B")
+            if let maxWidth = maxWidth {
+            for _ in (0..<maxWidth) {
+              view.write(" ")
+            }
+              view.escapeWith(code: "[\(maxWidth)D")
+            }
           }
         }
+//        if let topOffset = topOffset {
+//          for _ in (0..<topOffset) {
+//            view.escapeWith(code: "[2K")
+//            view.escapeWith(code: "[B")
+//          }
+//        }
       } else {
         print("Eeek")
       }
