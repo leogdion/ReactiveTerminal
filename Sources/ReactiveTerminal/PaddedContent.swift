@@ -1,9 +1,13 @@
-struct PaddingView<Content: View> : View , Modifiable {
+struct PaddingView<Content: View> : View , ContainerView, Modifiable {
   internal init(edges: TerminalEdge.Set, length: Int, @ViewBuilder body: @escaping () -> Content) {
     self.modifiers = []
     self.body = body()
     self.edges = edges
     self.length = length
+  }
+  
+  var child: View {
+    return self.body
   }
   
   let modifiers: [AnyCodedModifier]

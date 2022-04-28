@@ -1,12 +1,16 @@
 
 
-struct StackView<Content : View> : View,Modifiable {
+struct StackView<Content : View> : View,Modifiable, ContainerView {
   let modifiers: [AnyCodedModifier]
   
   init(_ original: StackView<Content>, newModifiers: [AnyCodedModifier]) {
     self.content = original.content
     self.spacing = original.spacing
     self.modifiers = newModifiers
+  }
+  
+  var child: View {
+    self.content
   }
   
   func renderUnmodified<View>(to view: inout View) where View : TerminalView {

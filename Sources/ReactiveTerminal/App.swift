@@ -199,7 +199,7 @@ import Foundation
 public protocol App {
   associatedtype Body : View
   init ()
-  @ViewBuilder var body: Self.Body { get }
+  var body: Self.Body { get }
   
 }
  
@@ -219,6 +219,7 @@ public extension App {
       //window.hideCursor()
               window.escapeWith(code: "[2J")
               window.move(to: .init(x: 0, y: 0))
+              window.loadInputs(app.body)
               app.body.render(to: &window)
               window.hideCursor()
               window.flush()

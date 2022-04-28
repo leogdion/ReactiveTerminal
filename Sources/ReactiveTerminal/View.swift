@@ -1,5 +1,7 @@
 
-
+public protocol ContainerView : View {
+  var child : View { get }
+}
 
 public protocol View {
   var idealSize : Size? { get }

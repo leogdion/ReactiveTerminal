@@ -10,6 +10,8 @@ public struct StandardInputStream {
   let term : termios
   let fileHandle : FileHandle
   
+  
+  
   init () {
     fileHandle = FileHandle.standardInput
     term = Self.enableRawMode(fileHandle: fileHandle)   
@@ -51,11 +53,57 @@ public struct StandardInputStream {
   }
 }
 
+struct AnyInput : Hashable {
+  static func == (lhs: AnyInput, rhs: AnyInput) -> Bool {
+    lhs.wrapped.id == rhs.wrapped.id
+  }
+  
+  func hash(into hasher: inout Hasher) {
+    self.wrapped.id.hash(into: &hasher)
+  }
+  
+  var hashValue: Int {
+    self.wrapped.id.hashValue
+  }
+  
+  let wrapped : Input
+}
+
+extension View {
+  func getInputs () -> [Input] {
+    
+    var newInputs = [Input]()
+    if let input = self as? Input {
+      newInputs.append(input)
+    } else if let collection = self as? CollectionView {
+      newInputs.append(contentsOf:
+      collection.views.flatMap { child in
+        child.getInputs()
+      }
+                       )
+    } else if let container = self as? ContainerView {
+      newInputs.append(contentsOf: container.child.getInputs())
+    }
+    return newInputs
+  }
+}
 public class StandardOutputWindow: TerminalWindow {
   var output = StandardOutputStream()
   let input = StandardInputStream()
   let sigwinchSrc = DispatchSource.makeSignalSource(signal: SIGWINCH, queue: .main)
 
+  var focusedInputIndex : Int?
+  var inputs : [AnyInput] = []
+  
+  var focusedInput : Input? {
+    guard let index = focusedInputIndex else {
+      return nil
+    }
+    guard self.inputs.indices.contains(index) else {
+      return nil
+    }
+    return self.inputs[index].wrapped
+  }
   public init() {
     var winsizeObj = winsize()
     if ioctl(STDOUT_FILENO, WindowSizeAttribute, &winsizeObj) == 0 {
@@ -72,7 +120,27 @@ public class StandardOutputWindow: TerminalWindow {
   
   public func read() {
     if let value = input.beginRead() {
-      
+      if value == 9 && self.inputs.count > 0 {
+        if let lastIndex = self.focusedInputIndex {
+          self.focusedInputIndex = (lastIndex + 1).remainderReportingOverflow(dividingBy: self.inputs.count).partialValue
+        } else {
+          self.focusedInputIndex = 0
+        }
+      } else if let focusedInput = focusedInput {
+        focusedInput.put(value)
+      }
+    }
+  }
+  
+  public func loadInputs(_ view: View) {
+    let newInputs = view.getInputs()
+    let anyInputs = newInputs.map(AnyInput.init(wrapped:))
+    
+    self.inputs = [AnyInput](Set(self.inputs + anyInputs))
+    
+   
+    if !self.inputs.isEmpty, focusedInputIndex == nil {
+      focusedInputIndex = 0
     }
   }
 
