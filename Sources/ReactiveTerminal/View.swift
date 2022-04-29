@@ -1,4 +1,9 @@
-
+public protocol ContentView : View {
+  associatedtype Body : View
+  
+  var body: Self.Body { get }
+  
+}
 public protocol ContainerView : View {
   var child : View { get }
 }
