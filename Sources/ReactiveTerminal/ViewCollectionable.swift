@@ -1,6 +1,7 @@
-
-
-
-protocol ViewCollectionable {
-  func doPrintEach (_ closure : @escaping () -> Void)
-}
+//
+//
+//
+//protocol ViewCollectionable {
+//  func doPrintEach<TerminalViewType: TerminalView>(to view: inout TerminalViewType, _ closure : @escaping (inout TerminalViewType) -> Void)
+//  
+//}

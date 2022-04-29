@@ -1,12 +1,21 @@
-
-
-
-public protocol View {
-  func doPrint ()
+public protocol ContentView : View {
+  associatedtype Body : View
+  
+  var body: Self.Body { get }
+  
+}
+public protocol ContainerView : View {
+  var child : View { get }
 }
 
+public protocol View {
+  var idealSize : Size? { get }
+  func render<TerminalViewType: TerminalView>(to view: inout TerminalViewType)
+}
+
+
 struct List<Content : View> : View {
-  func doPrint() {
+  func render<View>(to view: inout View) where View : TerminalView {
     
   }
   
@@ -14,4 +23,7 @@ struct List<Content : View> : View {
     
   }
   
+  var idealSize: Size? {
+    return nil
+  }
 }
